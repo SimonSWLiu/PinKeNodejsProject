@@ -9,7 +9,7 @@ var socket_io = require('socket.io');
 
 // 加载路由控制
 var index = require('./routes/index');
-var users = require('./routes/users');
+var customer = require('./routes/customer');
 
 var chat = require('./routes/chat');
 
@@ -35,8 +35,8 @@ app.use(cookieParser());//加载解析cookie的中间件。
 app.use(express.static(path.join(__dirname, 'public')));//设置public文件夹为存放静态文件的目录。
 
 // 匹配路径和路由
-app.use('/index', index);
-app.use('/users', users);
+app.use('/', index);
+app.use('/customer', customer);
 
 app.use('/chat', chat);
 
