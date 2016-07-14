@@ -13,6 +13,11 @@ var customer = require('./routes/customer');
 
 var chat = require('./routes/chat');
 
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+var mongodb = require('./models/mongodb');
+var mongoose = mongodb.mongoose;
+
 // 创建项目实例
 var app = express();
 
@@ -33,6 +38,17 @@ app.use(bodyParser.urlencoded({ extended: false }));//加载解析urlencoded请�
 app.use(cookieParser());//加载解析cookie的中间件。
 // 定义静态文件目录
 app.use(express.static(path.join(__dirname, 'public')));//设置public文件夹为存放静态文件的目录。
+
+app.use(session({
+    secret: 'pinkeSession',
+    cookie: { secure: false },
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection,
+        ttl: 1000 * 60 * 60 * 24
+      }),
+    resave: true,
+    saveUninitialized: true
+}));
 
 // 匹配路径和路由
 app.use('/', index);
