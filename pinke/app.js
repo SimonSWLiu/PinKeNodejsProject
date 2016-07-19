@@ -13,10 +13,14 @@ var customer = require('./routes/customer');
 
 var chat = require('./routes/chat');
 
+var flash = require('connect-flash');
+
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var mongodb = require('./models/mongodb');
-var mongoose = mongodb.mongoose;
+// var MongoStore = require('connect-mongo')(session);
+// var mongodb = require('./models/mongodb');
+// var mongoose = mongodb.mongoose;
+
+var RedisStore = require('connect-redis')(session);
 
 // 创建项目实例
 var app = express();
@@ -25,6 +29,8 @@ var app = express();
 // 定义EJS模板引擎和模板文件位置，也可以使用jade或其他模型引擎
 app.set('views', path.join(__dirname, 'views'));//设置 views 文件夹为存放视图文件的目录, 即存放模板文件的地方,__dirname 为全局变量,存储当前正在执行的脚本所在的目录。
 app.set('view engine', 'ejs');//设置视图模板引擎为 ejs。
+
+app.use(flash());
 
 // uncomment after placing your favicon in /public
 // 定义icon图标
@@ -39,13 +45,25 @@ app.use(cookieParser());//加载解析cookie的中间件。
 // 定义静态文件目录
 app.use(express.static(path.join(__dirname, 'public')));//设置public文件夹为存放静态文件的目录。
 
+// app.use(session({
+//     secret: 'mongodbSession',
+//     cookie: { secure: false },
+//     store: new MongoStore({
+//         mongooseConnection: mongoose.connection,
+//         ttl: 1000 * 60 * 60 * 24
+//       }),
+//     resave: true,
+//     saveUninitialized: true
+// }));
+
+
 app.use(session({
-    secret: 'pinkeSession',
-    cookie: { secure: false },
-    store: new MongoStore({
-        mongooseConnection: mongoose.connection,
-        ttl: 1000 * 60 * 60 * 24
-      }),
+    secret: 'redisSession',
+    store: new RedisStore({
+      host: '127.0.0.1',
+      port: '6379',
+      ttl: 1000 * 60 * 60 * 24
+    }),
     resave: true,
     saveUninitialized: true
 }));

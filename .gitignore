@@ -1,1 +1,2 @@
-*.log
+npm-debug.log
+pinke/node_modules/
